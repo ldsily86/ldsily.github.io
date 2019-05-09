@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    函数自调用 |
+    
+    Hexo</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-自调用" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      函数自调用
+    </h1>
+  
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/05/10/自调用/" class="article-date">
+  <time datetime="2019-05-10T08:00:06.000Z" itemprop="datePublished">2019-05-10</time>
+</a>
+        
+      </div>
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+      
+
+      
+        <p><strong>函数的使用步骤：1.函数声明  2.函数调用</strong></p>
+<p><strong>自调用函数：函数在声明的时候就调用了。</strong></p>
+<ol>
+<li>命名函数<br>function aa(){</li>
+</ol>
+<p>}</p>
+<ol start="2">
+<li>匿名函数<br>var f = function(){}<br>f()</li>
+</ol>
+<h1 id="1-自调用函数的概念"><a href="#1-自调用函数的概念" class="headerlink" title="1.自调用函数的概念"></a>1.自调用函数的概念</h1><p>//自调用函数是一次性的函数–声明的同时,直接调用了<br>(function () {<br>    var num=10;<br>    console.log(“函数”);<br>}());<br>console.log(num);</p>
+<h1 id="2-自调用函数作用"><a href="#2-自调用函数作用" class="headerlink" title="2.自调用函数作用"></a>2.自调用函数作用</h1><p> 自调用函数作用：开启一个新的作用域，可以防止变量命名污染的问题</p>
+<p> //自调用函数的好处：我们自己写的代码不会对外部的js代码有任何影响</p>
+<p>//我们在开发的时候会引入很多第三方的js文件，有时候我们并不直到在第三方js中谢了什么函数<br>//假如第三方js已经写好了一个函数如下：<br>function foo(){<br>  console.log(“aa”);<br>} </p>
+<p>//而我们不知情，又写了下面代码<br>function foo(){<br>  console.log(“bb”);<br>} </p>
+<p>//这个时候我们自己写的代码就会把第三方的js代码给顶掉<br>//而如果使用自调用函数则没有这个情况<br>(function(){<br>    function foo(){<br>        console.log(“这是我自己的foo”);<br>    }<br>    foo();<br>}());<br>foo();<br>//推荐在以后的开发工多使用自调用函数,把所有的js代码都放在自调用函数中</p>
+<h1 id="3-自调用函数注意点"><a href="#3-自调用函数注意点" class="headerlink" title="3.自调用函数注意点"></a>3.自调用函数注意点</h1><p>// 问题1：如果存在多个自调用函数要用分号分割，否则语法错误<br>// 下面代码会报错<br>(function () {<br>}())</p>
+<p>(function () {<br>}())</p>
+<p>// 问题2：当自调用函数 前面有匿名函数时，会把自调用函数作为参数(其实会匿名函数和自调用函数中的空格去掉)<br>var a = function () {<br>  alert(‘11’);<br>}</p>
+<p>(function () {<br>  alert(‘22’);<br>}())</p>
+<p>// 代码规范中会建议在自调用函数之前加上分号<br>;(function () {<br>}())</p>
+<p>;(function () {<br>}())</p>
+<p>​    </p>
+<h1 id="4-自调用函数中的全局变量"><a href="#4-自调用函数中的全局变量" class="headerlink" title="4.自调用函数中的全局变量"></a>4.自调用函数中的全局变量</h1><script>
+
+    (function () {
+         num=10;  //这个地方相当于window.num = 10;
+    })();
+    console.log(num);
+</script>
+
+<p>//将局部变量变成全局变量更常见的做法如下:<br>(function (window) {<br>    var num=10;//局部变量<br>    window.num=num;//全局变量<br>})(window);<br>console.log(num);</p>
+<p>//自调用可以获取外面的变量<br>    var age = 20;<br>    (function(){<br>        console.log(age)<br>    }())</p>
+<h1 id="5-自调用函数封装Random对象"><a href="#5-自调用函数封装Random对象" class="headerlink" title="5.自调用函数封装Random对象"></a>5.自调用函数封装Random对象</h1><p>//通过自调用函数产生一个随机数对象,在自调用函数外面,调用该随机数对象方法产生随机数<br>(function (window) {<br>  //产生随机数的构造函数<br>  function Random() {<br>  }<br>  //在原型对象中添加方法<br>  Random.prototype.getRandom = function (min,max) {<br>     return Math.floor(Math.random()*(max-min)+min);<br>  };<br>  //自调用函数中的普通函数是私有函数，只能够在当前自调用函数内部使用<br>  //要想把这个方法暴露给外部，可以设置给window，或者设置给Random函数<br>  function test1(){<br>     console.log(“test1”);<br>  }<br>  //把Random对象暴露给顶级对象window—&gt;外部可以直接使用这个对象<br>  window.Random=Random;<br>})(window);<br>//实例化随机数对象,这边能够使用Random函数，原因是Random函数已经被绑定到了window对象上<br>var rm=new Random();<br>//调用方法产生随机数<br>console.log(rm.getRandom(0,5));<br>test1();  //无法访问，test1()是私有函数</p>
+<p>自调用函数作用：开启一个新的作用域，可以防止变量命名污染的问题<br>自调用函数在声明的时候建议前面加分号<br>在自调用函数中如果要向外部暴露成员信息，我们可以将这个成员信息挂载window上</p>
+<blockquote>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lindisheng.github.io.git/2019/05/10/自调用/" data-id="cjvgkbmec0000jkl74t5wt9yv" class="article-share-link">Share</a>
+      
+    </footer>
+
+  </div>
+
+  
+    
+  <nav class="article-nav">
+    
+    
+      <a href="/2019/05/09/bfc/" class="article-nav-link">
+        <strong class="article-nav-caption">Olde posts</strong>
+        <div class="article-nav-title">bfc</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+    
+  
+
+</article>
+
+
+
+</section>
+  <footer class="footer">
+  
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 Hexo</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/hexo.svg" alt="Hexo"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+        <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+          <i class="fe fe-feed"></i>
+        </a>
+      
+    </li>
+  </ul>
+</nav>
+
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+<script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>
